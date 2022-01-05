@@ -144,10 +144,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03f0585808b4f414fac103d7e2cd262e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ClampX: {x: -20, y: 20}
-  ClampY: {x: 0, y: 20}
-  ClampZ: {x: -20, y: 20}
   Speed: 12
+  followEffect: 5
+  pushEffect: 1000
+  pullEffect: 0.5
+  pushDistance: 1
   aware: []
 --- !u!65 &8831306749773319598
 BoxCollider:

@@ -1,17 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Global;
 
 public class Boid : MonoBehaviour
 {
-    public Vector2 ClampX = new Vector2(-100, 100);
-    public Vector2 ClampY = new Vector2(-100, 100);
-    public Vector2 ClampZ = new Vector2(-100, 100);
     public float Speed = 5F;
-    public static float followEffect = 5F;
-    public static float pushEffect = 20F;
-    public static float pullEffect = 1F;
-    public static float pushDistance = 1.5F;
+    public float followEffect = 5F;
+    public float pushEffect = 1000F;
+    public float pullEffect = 1F;
+    public float pushDistance = 1.5F;
 
     private static List<Boid> list = new List<Boid>();
 
@@ -40,15 +38,31 @@ public class Boid : MonoBehaviour
 
     void Update()
     {
-        transform.position = new Vector3(
-            WrapValue(transform.position.x, ClampX),
-            WrapValue(transform.position.y, ClampY),
-            WrapValue(transform.position.z, ClampZ)
-        );
-
-        if (transform.position.y > ClampY.y)
+        if (transform.position.x > Global.State.maxPosition.x || transform.position.x < Global.State.minPosition.x)
         {
-            body.velocity = new Vector3(body.velocity.x, -1 * body.velocity.y, body.velocity.z);
+            body.velocity = new Vector3(-body.velocity.x, body.velocity.y, body.velocity.z);
+            transform.position = new Vector3(Mathf.Clamp(transform.position.x, Global.State.minPosition.x, Global.State.maxPosition.x), transform.position.y, transform.position.z);
+        }
+        if (transform.position.y > Global.State.maxPosition.y || transform.position.y < Global.State.minPosition.y)
+        {
+            body.velocity = new Vector3(body.velocity.x, -body.velocity.y, body.velocity.z);
+            transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, Global.State.minPosition.y, Global.State.maxPosition.y), transform.position.z);
+        }
+        if (transform.position.z > Global.State.maxPosition.z || transform.position.z < Global.State.minPosition.z)
+        {
+            body.velocity = new Vector3(body.velocity.x, body.velocity.y, -body.velocity.z);
+            transform.position = new Vector3(transform.position.x, transform.position.y, Mathf.Clamp(transform.position.z, Global.State.minPosition.z, Global.State.maxPosition.z));
+        }
+        // transform.position = new Vector3(
+        //     WrapValue(transform.position.x, ClampX),
+        //     WrapValue(transform.position.y, ClampY),
+        //     WrapValue(transform.position.z, ClampZ)
+        // );
+
+        (Vector3, float) edge = Global.State.ClosestEdgePointTo(transform.position);
+        if (edge.Item2 < 5)
+        {
+            PushFactorAway(edge.Item1, (5 - edge.Item2));
         }
 
         Vector3 pushVector = new Vector3(0, 0, 0);
@@ -58,7 +72,7 @@ public class Boid : MonoBehaviour
         foreach (Boid target in aware)
         {
             Vector3 offset = target.transform.position - transform.position;
-            float distanceFalloff = Mathf.Pow(offset.magnitude, 2F);
+            float distanceFalloff = Mathf.Pow(offset.magnitude, 2F) + 1;
             if (offset.magnitude < pushDistance)
             {
                 pushVector -= offset;
@@ -96,8 +110,13 @@ public class Boid : MonoBehaviour
 
     public void PushAway(Vector3 point)
     {
+        PushFactorAway(point, 1F);
+    }
+
+    public void PushFactorAway(Vector3 point, float factor)
+    {
         Vector3 offset = point - transform.position;
-        body.velocity -= offset * Time.deltaTime * pushEffect;
+        body.velocity -= offset * Time.deltaTime * pushEffect * factor;
     }
 
 }
