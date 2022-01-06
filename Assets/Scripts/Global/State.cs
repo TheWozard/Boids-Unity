@@ -6,59 +6,60 @@ namespace Global
 {
     public interface SizeChanger
     {
-        void OnSizeChange(Vector3 min, Vector3 max);
+        void OnSizeChange();
+    }
+
+    public class AxisInfo
+    {
+        public readonly float length;
+        public readonly float max;
+        public readonly float min;
+        public readonly float midpoint;
+        public AxisInfo(float min, float max)
+        {
+            this.length = max - min;
+            this.max = max;
+            this.min = min;
+            this.midpoint = min + (this.length / 2);
+        }
+        public AxisInfo WithPadding(float padding)
+        {
+            return new AxisInfo(min - padding, max + padding);
+        }
     }
 
     public class State
     {
-        public static float size = 20F;
-        public static float height = size;
-        public static Vector3 minPosition = new Vector3(-1 * size, 0, -1 * size);
-        public static Vector3 maxPosition = new Vector3(size, height, size);
+        public static float size;
+        public static float height;
+        public static float ratio;
+        public static Vector3 minPosition;
+        public static Vector3 maxPosition;
+        public static AxisInfo axisX;
+        public static AxisInfo axisY;
+        public static AxisInfo axisZ;
+
+        public static bool DebugDisplay = false;
 
         // A list of all classes that should be called when the size changes
         public static List<SizeChanger> onSizeChangeSubscription = new List<SizeChanger>();
 
-        public static void UpdateSize(float newSize, float newHeight)
+        public static void SetSize(float size, float height, float ratio)
         {
-            size = newSize;
-            height = newHeight;
-            minPosition = new Vector3(-1 * size, 0, -1 * size);
-            maxPosition = new Vector3(size, height, size);
+            State.size = size;
+            State.height = height;
+            State.ratio = ratio;
+            State.minPosition = new Vector3(ratio * -size, 0, -size);
+            State.maxPosition = new Vector3(ratio * size, height, size);
+            State.axisX = new AxisInfo(State.minPosition.x, State.maxPosition.x);
+            State.axisY = new AxisInfo(State.minPosition.y, State.maxPosition.y);
+            State.axisZ = new AxisInfo(State.minPosition.z, State.maxPosition.z);
 
             onSizeChangeSubscription.ForEach(changer =>
             {
-                changer.OnSizeChange(minPosition, maxPosition);
+                changer.OnSizeChange();
             }
             );
-        }
-
-        public static (Vector3, float) ClosestEdgePointTo(Vector3 point)
-        {
-            (float, float) ClosestX = CloserTo(point.x, maxPosition.x, minPosition.x);
-            (float, float) ClosestY = CloserTo(point.y, maxPosition.y, minPosition.y);
-            (float, float) ClosestZ = CloserTo(point.z, maxPosition.z, minPosition.z);
-
-            if (ClosestX.Item2 < ClosestY.Item2 & ClosestX.Item2 < ClosestZ.Item2)
-            {
-                return (new Vector3(ClosestX.Item1, point.y, point.z), ClosestX.Item2);
-            }
-            if (ClosestY.Item2 < ClosestX.Item2 & ClosestY.Item2 < ClosestZ.Item2)
-            {
-                return (new Vector3(point.x, ClosestY.Item1, point.z), ClosestY.Item2);
-            }
-            return (new Vector3(point.x, point.y, ClosestZ.Item1), ClosestZ.Item2);
-        }
-
-        private static (float, float) CloserTo(float target, float option1, float option2)
-        {
-            float distance1 = Mathf.Abs(target - option1);
-            float distance2 = Mathf.Abs(target - option2);
-            if (Mathf.Abs(target - option1) > Mathf.Abs(target - option2))
-            {
-                return (option2, distance2);
-            }
-            return (option1, distance1);
         }
     }
 }

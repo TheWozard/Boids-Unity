@@ -16,7 +16,7 @@ public class BoidDetection : MonoBehaviour
         Boid target = other.transform.GetComponent<Boid>();
         if (target != null)
         {
-            parent.aware.Add(target);
+            parent.BecomeAwareOf(target);
         }
     }
 
@@ -25,7 +25,7 @@ public class BoidDetection : MonoBehaviour
         Boid target = other.transform.GetComponent<Boid>();
         if (target != null)
         {
-            parent.aware.Remove(target);
+            parent.LoseAwarenessOf(target);
         }
     }
 
@@ -35,5 +35,10 @@ public class BoidDetection : MonoBehaviour
         {
             parent.PushAway(other.ClosestPoint(transform.parent.transform.position));
         }
+    }
+
+    private void OnMouseDown()
+    {
+        Debug.Log("Test");
     }
 }

@@ -144,11 +144,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03f0585808b4f414fac103d7e2cd262e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 12
-  followEffect: 5
-  pushEffect: 1000
-  pullEffect: 0.5
-  pushDistance: 1
+  Speed: 8
+  followEffect: 20
+  pushEffect: 20
+  wallEffect: 3
+  pullEffect: 4
+  pushDistance: 1.5
+  wallDistance: 3
   aware: []
 --- !u!65 &8831306749773319598
 BoxCollider:

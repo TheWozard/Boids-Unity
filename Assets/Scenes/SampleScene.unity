@@ -156,6 +156,8 @@ MonoBehaviour:
   boidObject: {fileID: 2125907664153555749, guid: e3c694235d9845041bd24bcc00cf50cd, type: 3}
   chamberObject: {fileID: 8784542293326557088, guid: 03cdaee9bb983b942830b96ed887b92a, type: 3}
   floorMaterial: {fileID: 2100000, guid: 97193764f16673d4c96e512440e5579a, type: 2}
+  glassMaterial: {fileID: 2100000, guid: df791af3b41d57241827ea99ba56554a, type: 2}
+  edgeMaterial: {fileID: 2100000, guid: 295df5065c7057d4187c2416694b7f81, type: 2}
 --- !u!4 &653188089
 Transform:
   m_ObjectHideFlags: 0
